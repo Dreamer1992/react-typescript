@@ -1,7 +1,7 @@
-import React, { useContext } from "react";
+import React from "react";
 
-// project import
-import { AppSetStateContext } from "../components/AppState";
+// project imports
+import { useStateDispatch } from "../components/AppState";
 
 // styles
 import styles from "./Pizza.module.css";
@@ -19,34 +19,14 @@ interface IProps {
 }
 
 const Pizza: React.FC<IProps> = ({ pizza }) => {
-  const setState = useContext(AppSetStateContext);
+  const dispatch = useStateDispatch();
 
   const handleAddToCardClick = () => {
-    setState?.((state) => {
-      const itemExists = state.cart.items.find((item) => item.id === pizza.id);
-
-      return {
-        ...state,
-        cart: {
-          ...state.cart,
-          items: itemExists
-            ? state.cart.items.map((item) => {
-                if (item.id === pizza.id) {
-                  return { ...item, quantity: item.quantity + 1 };
-                }
-                return item;
-              })
-            : [
-                ...state.cart.items,
-                {
-                  id: pizza.id,
-                  name: pizza.name,
-                  price: pizza.price,
-                  quantity: pizza.quantity,
-                },
-              ],
-        },
-      };
+    dispatch({
+      type: "ADD_TO_CART",
+      payload: {
+        item: { id: pizza.id, name: pizza.name, price: pizza.price },
+      },
     });
   };
 
