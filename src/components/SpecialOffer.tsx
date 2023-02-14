@@ -5,31 +5,33 @@ import { IPizza } from "../types";
 
 // style
 import styles from "./SpecialOffer.module.css";
-import { AddToCartProps, withAddToCart } from "./AddToCart";
+import { WithAddToCartProps } from "./AddToCart";
 
-interface IProps extends AddToCartProps {
+interface IProps {
   pizza: IPizza;
 }
 
-const SpecialOffer: React.FC<IProps> = ({ pizza, addToCart }) => {
-  const handleAddToCardClick = () => {
-    addToCart({
-      id: pizza.id,
-      name: pizza.name,
-      price: pizza.price,
-    });
-  };
-
+const SpecialOffer: React.FC<IProps> = ({ pizza }) => {
   return (
     <div className={styles.container}>
       <h2>{pizza.name}</h2>
       <p>{pizza.description}</p>
       <p>{pizza.price}</p>
-      <button type="button" onClick={handleAddToCardClick}>
-        Добавить пиццу
-      </button>
+
+      <WithAddToCartProps>
+        {({ addToCart }) => (
+          <button
+            type="button"
+            onClick={() =>
+              addToCart({ id: pizza.id, name: pizza.name, price: pizza.price })
+            }
+          >
+            Добавить пиццу
+          </button>
+        )}
+      </WithAddToCartProps>
     </div>
   );
 };
 
-export default withAddToCart(SpecialOffer);
+export default SpecialOffer;
