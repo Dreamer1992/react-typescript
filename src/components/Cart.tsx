@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createRef } from "react";
 
 import { AppStateContext } from "../components/AppState";
 
@@ -15,16 +15,37 @@ interface IState {
 }
 
 class Cart extends React.Component<IProps, IState> {
+  #containerRef: React.RefObject<HTMLDivElement>;
+
   constructor(props: IProps) {
     super(props);
     this.state = {
       isOpen: false,
     };
+
+    this.#containerRef = createRef();
   }
 
   handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     this.setState((prevState) => ({ isOpen: !prevState.isOpen }));
   };
+
+  handleOutsideClick = (e: MouseEvent) => {
+    if (
+      this.#containerRef.current &&
+      !this.#containerRef.current.contains(e.target as Node)
+    ) {
+      this.setState({ isOpen: false });
+    }
+  };
+
+  componentDidMount() {
+    document.addEventListener("mousedown", this.handleOutsideClick);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("mousedown", this.handleOutsideClick);
+  }
 
   render() {
     return (
@@ -36,7 +57,7 @@ class Cart extends React.Component<IProps, IState> {
           );
 
           return (
-            <div className={styles.cartContainer}>
+            <div className={styles.cartContainer} ref={this.#containerRef}>
               <button
                 className={styles.button}
                 type="button"
